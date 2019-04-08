@@ -8,6 +8,7 @@ using static Simple_API_Database.Models.EF_Models;
 using static Simple_API_Database.Models.KeyStat;
 using static Simple_API_Database.Models.Quote;
 using static Simple_API_Database.Models.HistoricalData;
+using static Simple_API_Database.Models.CompanyInfo;
 using Simple_API_Database.Models;
 using Simple_API_Database.DataAccess;
 using Newtonsoft.Json;
@@ -314,6 +315,87 @@ namespace Simple_API_Database.Controllers
             return View("Quotes");
         }
 
+        public List<CompanyInfo> GetCompanyInfo(List<String> symbols)
+        {
+            
+            string companyInfoList = "";
+            CompanyInfo companiesInfo = null;
+            List<CompanyInfo> companies = new List<CompanyInfo>();
+            // connect to the IEXTrading API and retrieve information
+
+            foreach (String item in symbols)
+            {
+                string IEXTrading_API_PATH = BASE_URL + "stock/" + item + "/company";
+                httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Accept.Clear();
+                httpClient.DefaultRequestHeaders.Accept.Add(new
+                    System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.BaseAddress = new Uri(IEXTrading_API_PATH);
+                HttpResponseMessage response = httpClient.GetAsync(IEXTrading_API_PATH).GetAwaiter().GetResult();
+
+                // read the Json objects in the API response
+                if (response.IsSuccessStatusCode)
+                {
+                    companyInfoList = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                }
+
+                // now, parse the Json strings as C# objects
+                if (!companyInfoList.Equals(""))
+                {
+                    // https://stackoverflow.com/a/46280739
+                    companiesInfo = JsonConvert.DeserializeObject<CompanyInfo>(companyInfoList);
+                    //companies = companies.GetRange(0,100);
+                }
+                //dbContext.CompanyInfo.Add(companiesInfo);
+                companies.Add(companiesInfo);
+            }
+            //dbContext.SaveChanges();
+            return companies;
+        }
+
+        public IActionResult CompanyInfo()
+        {
+            //Set ViewBag variable first
+            ViewBag.dbSuccessComp = 0;
+            //List<Company> companies = dbContext.Companies.ToList();
+            List<Company> companies = GetSymbols().GetRange(0, 10);
+            List<String> companyNames = new List<string>();
+            List<CompanyInfo> companyInfos = new List<CompanyInfo>();
+            foreach(Company company in companies)
+            {
+                //CompanyInfo companyInfo = GetCompanyInfo(company.symbol);
+                companyNames.Add(company.symbol);
+            }
+            companyInfos = GetCompanyInfo(companyNames);
+            //List<CompanyInfo> companyInfo = GetCompanyInfo(symbol);
+
+            //Save companies in TempData, so they do not have to be retrieved again
+            //TempData["CompanyInfo"] = JsonConvert.SerializeObject(companyInfo);
+
+            return View(companyInfos);
+        }
+        public IActionResult PopulateCompanyInfo()
+        {
+            // Retrieve the companies that were saved in the symbols method
+            List<CompanyInfo> companyInfo = JsonConvert.DeserializeObject<List<CompanyInfo>>(TempData["CompanyInfo"].ToString());
+
+            foreach (CompanyInfo companyInfo1 in companyInfo)
+            {
+                //Database will give PK constraint violation error when trying to insert record with existing PK.
+                //So add company only if it doesnt exist, check existence using symbol (PK)
+                if (dbContext.CompanyInfo.Where(c => c.symbol.Equals(companyInfo1.symbol)).Count() == 0)
+                {
+
+                    dbContext.CompanyInfo.Add(companyInfo1);
+                }
+            }
+
+            dbContext.SaveChanges();
+            ViewBag.dbSuccessComp = 1;
+            return View("CompanyInfo", companyInfo);
+        }
+
+
         public IActionResult Privacy()
         {
             return View();
@@ -427,10 +509,11 @@ namespace Simple_API_Database.Controllers
             return View();
         }
 
-        public IActionResult Crypto()
-        {
-            return View();
-        }
+        //public IActionResult CompanyInfo()
+        //{
+        //    return View();
+        //}
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

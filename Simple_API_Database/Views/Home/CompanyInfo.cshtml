@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@model IEnumerable<Simple_API_Database.Models.CompanyInfo>
+
+<h2>Company Information</h2>
+<hr />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Symbol
+            </th>
+            <th>
+                Company Name
+            </th>
+            <th>
+                Industry
+            </th>
+            <th>
+                Website
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.symbol)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.companyName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.industry)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.website)
+                </td>
+            </tr>
+        }
+
+        @{
+            Model.Count();
+        }
+    </tbody>
+</table>
+<tr>
+    <td>
+        <a id="dbopt" asp-controller="Home" asp-action="PopulateCompanyInfo"><img src="~/img/button_save-data.png" /></a>
+    </td>
+</tr>
