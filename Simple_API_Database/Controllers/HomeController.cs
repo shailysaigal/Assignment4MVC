@@ -88,10 +88,7 @@ namespace Simple_API_Database.Controllers
             return View(companies);
         }
 
-        /*
-            The Symbols action calls the GetSymbols method that returns a list of Companies.
-            This list of Companies is passed to the Symbols View.
-        */
+        
         public IActionResult Symbols()
         {
             //Set ViewBag variable first
@@ -101,9 +98,7 @@ namespace Simple_API_Database.Controllers
             //Save companies in TempData, so they do not have to be retrieved again
            TempData["Companies"] = JsonConvert.SerializeObject(companies);
 
-           // String companiesData = JsonConvert.SerializeObject(companies);
-
-            //HttpContext.Session.SetString("CompaniesData", companiesData);
+          
 
             return View(companies);
         }
@@ -113,14 +108,12 @@ namespace Simple_API_Database.Controllers
         {
             if (TempData["Companies"] != null)
             {
-                //string companiesData = HttpContext.Session.GetString("CompaniesData");
-                // Retrieve the companies that were saved in the symbols method
+                
                 List<Company> companies = JsonConvert.DeserializeObject<List<Company>>(TempData["Companies"].ToString());
 
                 foreach (Company company in companies)
                 {
-                    //Database will give PK constraint violation error when trying to insert record with existing PK.
-                    //So add company only if it doesnt exist, check existence using symbol (PK)
+                    
                     if (dbContext.Companies.Where(c => c.symbol.Equals(company.symbol)).Count() == 0)
                     {
                         dbContext.Companies.Add(company);
@@ -213,8 +206,7 @@ namespace Simple_API_Database.Controllers
 
                 foreach (KeyStat ks in keystats)
                 {
-                    //Database will give PK constraint violation error when trying to insert record with existing PK.
-                    //So add company only if it doesnt exist, check existence using symbol (PK)
+                    
                     if (dbContext.KeyStats.Where(c => c.symbol.Equals(ks.symbol)).Count() == 0)
                     {
                         dbContext.KeyStats.Add(ks);
@@ -235,8 +227,7 @@ namespace Simple_API_Database.Controllers
 
             Quote keystpercmp = null;
 
-            // connect to the IEXTrading API and retrieve information
-            //httpClient.BaseAddress = new Uri(IEXTrading_API_PATH);
+            
             HttpResponseMessage response = httpClient.GetAsync(IEXTrading_API_PATH).GetAwaiter().GetResult();
 
             // read the Json objects in the API response
