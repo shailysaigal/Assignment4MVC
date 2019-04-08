@@ -1,0 +1,101 @@
+﻿
+@{
+    ViewData["Title"] = "HistoricalDatas";
+}
+
+<h1>HistoricalDatas</h1>
+
+@model IEnumerable<IEnumerable<Simple_API_Database.Models.HistoricalData>>
+
+<div>
+    @using (Html.BeginForm("HistoricalDatas", "Home", FormMethod.Post))
+    {
+        @Html.Label("Please enter the ticker symbol of the stock to search!")
+        @Html.TextBox("txtName")
+        @Html.TextBox("txtName2")
+        <input type="submit" id="btnSubmit" name="Get Historical Data!" />
+    }
+    @ViewBag.Name
+    @ViewBag.Name2
+</div>
+
+@if (Model != null && Model.Count() != 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Symbol
+                </th>
+                <th>
+                    Label
+                </th>
+                <th>
+                    High
+                </th>
+                <th>
+                    Low
+                </th>
+                <th>
+                    Change
+                </th>
+                <th>
+                    ChangeOverTime
+                </th>
+                <th>
+                    ChangePercent
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ 
+                var c = 1;
+                var text = @ViewBag.Name;
+            foreach(var item1 in Model)
+            {
+                @if (c == 2)
+                {
+                    text = @ViewBag.Name2;
+                }
+
+                    @foreach (var item in item1)
+                    {
+                        <tr>
+                            <td>
+                                @text
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.label)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.high)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.low)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.change)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.changeOverTime)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.changePercent)
+                            </td>
+                        </tr>
+                        }
+                    c = c + 1;
+                }
+                }
+            @{
+                Model.Count();
+            }
+
+        </tbody>
+    </table>
+    <tr>
+        <td>
+            <a id="dbopt" asp-controller="Home" asp-action="PopulateHistoricalData"><img src="~/img/button_save-data.png" /></a>
+        </td>
+    </tr>
+}

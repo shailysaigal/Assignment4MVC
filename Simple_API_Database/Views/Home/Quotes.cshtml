@@ -1,0 +1,72 @@
+﻿@{
+    ViewData["Title"] = "Quote";
+}
+
+<h2> Quotes</h2>
+@model IEnumerable<Simple_API_Database.Models.Quote>
+
+<div>
+    @using (Html.BeginForm("Quotes", "Home", FormMethod.Post))
+    {
+        @Html.Label("Please enter the ticker symbol of the stock to search!")
+        @Html.TextBox("txtName")
+        @Html.TextBox("txtName2")
+        <input type="submit" id="btnSubmit" name="Get Quotes!" />
+    }
+    @ViewBag.Name
+    @ViewBag.Name2
+</div>
+
+
+<hr />
+@if (Model != null && Model.Count() != 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Symbol
+                </th>
+                <th>
+                    Company Name
+                </th>
+                <th>
+                    Calculation Price
+                </th>
+                <th>
+                    Sector
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.symbol)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.companyName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.calculationPrice)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.sector)
+                    </td>
+                </tr>
+            }
+
+            @{
+                Model.Count();
+            }
+        </tbody>
+    </table>
+    <tr>
+        <td>
+            <a id="dbopt" asp-controller="Home" asp-action="PopulateQuote"><img src="~/img/button_save-data.png" /></a>
+        </td>
+    </tr>
+}

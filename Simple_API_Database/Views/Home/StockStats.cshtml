@@ -1,0 +1,64 @@
+﻿@{
+    ViewData["Title"] = "Stock Stats";
+}
+@model IEnumerable<Simple_API_Database.Models.KeyStat>
+<h2> StatStocks</h2>
+<div>
+    @using (Html.BeginForm("StockStats", "Home", FormMethod.Post))
+    {
+        @Html.Label("Please enter the ticker symbol of the stock to search!")
+        @Html.TextBox("txtName")
+        @Html.TextBox("txtName2")
+        <input type="submit" id="btnSubmit" name="Get Stats!" />
+    }
+    @ViewBag.Name
+    @ViewBag.Name2
+</div>
+
+@if (Model != null && Model.Count() != 0)
+        {     <table class="table">
+    <thead>
+        <tr>
+            <th>
+                Symbol
+            </th>
+            <th>
+                Market Cap
+            </th>
+            <th>
+                Gross Profit
+            </th>
+            <th>
+                Revenue
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.symbol)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.marketcap)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.grossProfit)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.revenue)
+                </td>
+            </tr>
+        }
+        @{
+            Model.Count();
+        }
+    </tbody>
+</table>
+<tr>
+    <td>
+        <a id="dbopt" asp-controller="Home" asp-action="PopulateKeyStats"><img src="~/img/button_save-data.png" /></a>
+    </td>
+</tr>
+}
